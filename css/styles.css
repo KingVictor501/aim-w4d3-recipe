@@ -794,8 +794,8 @@ main {
 /* ==========================================================================
    Share form
    ========================================================================== */
-/* Share page layout: one column on phones; on desktop the form and its
-   confirmation on the left, the handler flow panel on the right */
+/* Share page layout: one column; on desktop the form and its confirmation
+   sit in a comfortable reading width */
 .share-page {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -979,143 +979,6 @@ abbr[title="required"] {
 .confirmation dd {
   margin: 0;
   overflow-wrap: anywhere;
-}
-
-/* ==========================================================================
-   Handler flow panel (share form)
-   ========================================================================== */
-.flow {
-  padding: var(--space-lg);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background-color: var(--surface);
-}
-
-.flow summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-sm);
-  border-radius: 0.5rem;
-  cursor: pointer;
-  list-style: none;
-}
-
-.flow summary::-webkit-details-marker {
-  display: none;
-}
-
-.flow summary h2 {
-  margin: 0;
-  font-size: 1.125rem;
-}
-
-.flow summary::after {
-  content: "Show ▾";
-  flex-shrink: 0;
-  padding: 0.25rem var(--space-sm);
-  border: 1.5px solid var(--line);
-  border-radius: 999px;
-  color: var(--accent);
-  font-size: 0.875rem;
-  font-weight: 700;
-}
-
-.flow[open] summary::after {
-  content: "Hide ▴";
-}
-
-.flow > p {
-  margin: var(--space-sm) 0 var(--space-md);
-  color: var(--muted);
-  font-size: 0.9375rem;
-}
-
-.flow ol {
-  display: grid;
-  gap: var(--space-xs);
-  max-height: 32rem;
-  margin: 0;
-  padding: 0;
-  overflow-y: auto;
-  list-style: none;
-}
-
-.step {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas:
-    "code   time"
-    "detail detail";
-  gap: 0.125rem var(--space-xs);
-  padding: var(--space-xs) var(--space-sm);
-  border-left: 3px solid var(--line);
-  border-radius: 0.5rem;
-  background-color: var(--surface-2);
-  animation: rise 0.25s ease-out;
-}
-
-.step code {
-  grid-area: code;
-  display: block;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.875rem;
-  overflow-wrap: break-word;
-}
-
-.step.is-pass code,
-.step.is-fail code {
-  padding-left: 2ch;
-  text-indent: -2ch;
-}
-
-.step time {
-  grid-area: time;
-  color: var(--muted);
-  font-size: 0.8125rem;
-  font-variant-numeric: tabular-nums;
-}
-
-.step small {
-  grid-area: detail;
-  color: var(--muted);
-  font-size: 0.8125rem;
-}
-
-.step.is-idle {
-  animation: none;
-}
-
-.step.is-info {
-  border-left-color: var(--amber);
-}
-
-.step.is-info code {
-  color: var(--accent);
-}
-
-.step.is-pass {
-  border-left-color: var(--success);
-}
-
-.step.is-pass code::before {
-  content: "✓ ";
-  content: "✓ " / "";
-  color: var(--success);
-}
-
-.step.is-fail {
-  border-left-color: var(--error);
-}
-
-.step.is-fail code::before {
-  content: "✕ ";
-  content: "✕ " / "";
-  color: var(--error);
-}
-
-.step.is-fail small {
-  color: var(--error);
 }
 
 @keyframes rise {
@@ -1338,38 +1201,9 @@ abbr[title="required"] {
     grid-column: 1 / -1;
   }
 
-  .share-page {
-    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-    grid-template-areas:
-      "crumb   crumb"
-      "intro   intro"
-      "form    flow"
-      "confirm flow";
-  }
-
-  .share-page > .breadcrumb {
-    grid-area: crumb;
-  }
-
-  .share-page > .page-intro {
-    grid-area: intro;
-  }
-
-  .share-form {
-    grid-area: form;
-  }
-
-  .confirmation {
-    grid-area: confirm;
-  }
-
-  .share-page > .flow {
-    grid-area: flow;
-  }
-
-  .flow {
-    position: sticky;
-    top: 5.5rem;
+  .share-page > .share-form,
+  .share-page > .confirmation {
+    max-width: 48rem;
   }
 
   .hero {

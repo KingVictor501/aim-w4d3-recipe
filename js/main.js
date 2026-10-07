@@ -9,7 +9,7 @@
 //  2. Recipe data                   8. Homepage: typing + favourites
 //  3. Helpers                       9. Recipes page: category filter
 //  4. Nav menu (hamburger)         10. Recipe detail page
-//  5. Theme toggle button          11. Share form: validation + handler flow
+//  5. Theme toggle button          11. Share form: validation
 //  6. Footer links, back to top
 // ==========================================================================
 
@@ -421,7 +421,7 @@ const FAVOURITE_IDS = ["chocolate-lava-cakes", "key-lime-pie", "classic-tiramisu
 // querySelectorAll gives an empty list (never "nothing") when there's no match.
 const pageHas = (id) => document.querySelectorAll(`#${id}`).length > 0;
 
-// User prefers less motion: skip typing, smooth scroll and flow delays
+// User prefers less motion: skip typing and smooth scrolling
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // 75 → "1 hr 15 min", 45 → "45 min", 120 → "2 hr"
@@ -756,6 +756,14 @@ const initRecipeDetail = () => {
 
   // Find the recipe named in the address
   const id = new URLSearchParams(window.location.search).get("id") || "";
+
+  // No recipe named at all (e.g. recipe.html opened on its own): there's
+  // nothing to show here, so go to the recipes list to pick one
+  if (id === "") {
+    window.location.replace("recipes.html");
+    return;
+  }
+
   const matches = recipesWithId(id);
 
   // Unknown id: show the "Recipe not found" message instead, and say so in
@@ -763,7 +771,7 @@ const initRecipeDetail = () => {
   if (matches.length === 0) {
     document.title = "Recipe not found | Sweet Amber";
     document.getElementById("crumb-current").textContent = "Recipe not found";
-    document.getElementById("missing-id").textContent = id === "" ? "that" : `"${id}"`;
+    document.getElementById("missing-id").textContent = `"${id}"`;
     document.getElementById("recipe-missing").hidden = false;
     return;
   }
@@ -819,7 +827,7 @@ const initRecipeDetail = () => {
 };
 
 // ==========================================================================
-// 11. Share form: validation + handler flow
+// 11. Share form: validation
 // ==========================================================================
 // The form has novalidate, so the browser's own pop-ups never appear. The
 // HTML attributes (required, type="email", minlength, min/max) are still the
@@ -827,19 +835,15 @@ const initRecipeDetail = () => {
 // messages, plus checks HTML can't do on its own, including cross-field
 // checks (title vs your name, title vs recipes already on the site,
 // instructions vs ingredients). Each field is checked when you leave it,
-// then live as you type. On submit, every step of the handler is logged
-// in the "Handler flow" panel as it runs.
+// then live as you type, and all together when you click Share recipe.
 const initShareForm = () => {
   if (!pageHas("share-form")) return;
 
   // ---- Grab the pieces ----------------------------------------------------
   const form = document.getElementById("share-form");
-  const submitButton = document.getElementById("share-submit");
-  const resetButton = document.getElementById("share-reset");
   const status = document.getElementById("share-status");
   const confirmation = document.getElementById("share-confirmation");
   const summary = document.getElementById("share-summary");
-  const flowList = document.getElementById("flow-steps");
 
   const ALLOWED_EMAIL_ENDINGS = ["com", "gov", "edu", "org", "mil"];
 
@@ -976,31 +980,6 @@ const initShareForm = () => {
     el.addEventListener("change", recheck);
   });
 
-  // ---- Handler flow panel --------------------------------------------------
-  const STEP_DELAY = reducedMotion ? 0 : 250; // ms between logged steps
-
-  // Pause the handler for a moment so each step can be seen as it's logged
-  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  let flowStart = 0;
-  let running = false;
-
-  // Add one step to the panel: code that ran, time since submit, what happened
-  const logStep = (code, detail, state) => {
-    // Time since the handler started
-    const elapsed = Math.round(performance.now() - flowStart);
-
-    // Build the step
-    const item = make("li", `step is-${state}`);
-    const codeEl = make("code", "", code);
-    const time = make("time", "", `+${elapsed}ms`);
-    time.dateTime = `PT${(elapsed / 1000).toFixed(3)}S`;
-    item.append(codeEl, time, make("small", "", detail));
-
-    // Add it and keep the newest step in view
-    flowList.append(item);
-    flowList.scrollTop = flowList.scrollHeight;
-  };
-
   // ---- Confirmation card ---------------------------------------------------
   const showConfirmation = (data) => {
     // Rows of label + value
@@ -1020,74 +999,45 @@ const initShareForm = () => {
   };
 
   // ---- Submit handler ------------------------------------------------------
-  form.addEventListener("submit", async (e) => {
-    // Stop the page from reloading (must run before any await)
+  form.addEventListener("submit", (e) => {
+    // Stop the page from reloading
     e.preventDefault();
-    if (running) return;
 
-    // Start a new run: lock the buttons and clear the panel
-    running = true;
-    submitButton.disabled = true;
-    resetButton.disabled = true;
-    flowStart = performance.now();
-    flowList.replaceChildren();
+    // Clear the previous result
     confirmation.hidden = true;
     status.textContent = "";
     status.className = "form-status";
 
-    logStep("form 'submit' event", "Submit clicked — handler invoked", "info");
-    await wait(STEP_DELAY);
-    logStep("e.preventDefault()", "Default browser submission blocked; JavaScript takes over", "info");
-
-    // Check each field in turn, logging each result
-    const invalid = [];
-    for (const name of Object.keys(fields)) {
-      await wait(STEP_DELAY);
+    // Check every field (including the cross-field checks) and collect the problems
+    const invalid = Object.keys(fields).filter((name) => {
       touched.add(name);
-      const message = validateField(name);
-      if (message !== "") invalid.push(name);
+      return validateField(name) !== "";
+    });
 
-      // Mention the cross-field checks for the fields that have them
-      const crossNotes = {
-        title: " (incl. cross-checks: not your name, not already on the site)",
-        instructions: " (incl. cross-check: not a copy of the ingredients)"
-      };
-      const passDetail = `Valid${Object.hasOwn(crossNotes, name) ? crossNotes[name] : ""}`;
-      logStep(`validateField('${name}')`, message === "" ? passDetail : message, message === "" ? "pass" : "fail");
-    }
-
-    await wait(STEP_DELAY);
+    // Something's wrong: summarise, move focus to the first problem, stop
     if (invalid.length > 0) {
-      // Something's wrong: summarise, focus the first problem, stop
       status.className = "form-status is-error";
       status.textContent = `Please fix ${invalid.length} ${invalid.length === 1 ? "field" : "fields"} above.`;
       fields[invalid[0]].focus();
-      logStep(`${fields[invalid[0]].id}.focus()`, `${invalid.length} invalid — handler stopped, focus moved to the first problem`, "fail");
-    } else {
-      // All good: collect the values, show the confirmation, clear the form
-      const data = {
-        name: fields.name.value.trim(),
-        email: fields.email.value.trim(),
-        title: fields.title.value.trim(),
-        category: fields.category.value,
-        prep: Number(fields.prep.value),
-        ingredientCount: linesOf(fields.ingredients.value).length,
-        stepCount: linesOf(fields.instructions.value).length
-      };
-      showConfirmation(data);
-      logStep("showConfirmation(data)", `All fields valid — "${data.title}" summarised in the confirmation card`, "pass");
-
-      await wait(STEP_DELAY);
-      form.reset();
-      status.className = "form-status is-success";
-      status.textContent = `Thanks, ${data.name}! "${data.title}" is ready to share.`;
-      logStep("form.reset()", "Form cleared, ready for another recipe (nothing is sent: no server yet)", "info");
+      return;
     }
 
-    // Unlock the buttons
-    running = false;
-    submitButton.disabled = false;
-    resetButton.disabled = false;
+    // All good: collect the values and show them in the confirmation card
+    const data = {
+      name: fields.name.value.trim(),
+      email: fields.email.value.trim(),
+      title: fields.title.value.trim(),
+      category: fields.category.value,
+      prep: Number(fields.prep.value),
+      ingredientCount: linesOf(fields.ingredients.value).length,
+      stepCount: linesOf(fields.instructions.value).length
+    };
+    showConfirmation(data);
+
+    // Clear the form for another recipe (nothing is sent: there's no server yet)
+    form.reset();
+    status.className = "form-status is-success";
+    status.textContent = `Thanks, ${data.name}! "${data.title}" is ready to share.`;
   });
 
   // ---- Reset ---------------------------------------------------------------
@@ -1096,10 +1046,8 @@ const initShareForm = () => {
   form.addEventListener("reset", () => {
     touched.clear();
     Object.keys(fields).forEach(clearField);
-    if (!running) {
-      status.textContent = "";
-      status.className = "form-status";
-    }
+    status.textContent = "";
+    status.className = "form-status";
   });
 };
 

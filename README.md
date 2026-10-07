@@ -9,7 +9,7 @@ A dessert recipe site built with plain HTML, CSS and JavaScript (ES6, no framewo
 | Home | `index.html` | Hero with a typing animation on the intro hook, category shortcuts, three reader favourites |
 | Recipes | `recipes.html` | Grid of 12 recipe cards with a filter by category |
 | Recipe | `recipe.html?id=…` | One recipe: times, servings, ingredients and method (opened from "View Recipe") |
-| Share a Recipe | `share.html` | Form with live validation, cross-field checks and a handler flow panel |
+| Share a Recipe | `share.html` | Form with live validation and cross-field checks |
 
 ## Structure
 
@@ -34,7 +34,6 @@ A dessert recipe site built with plain HTML, CSS and JavaScript (ES6, no framewo
   - the email must end in .com, .gov, .edu, .org or .mil
   - the recipe title can't match your name or a recipe already on the site
   - ingredients and instructions need at least 2 lines each, and the instructions can't be a copy of the ingredients
-- **Handler flow panel**: every step of the share form's submit handler appears as it runs, with timings.
 - **Breadcrumbs**: Home › Recipes › Key Lime Pie.
 - **Light/dark theme toggle**: saved in `localStorage`, so it carries over to every page and future visits, and it's applied before the page is drawn (no flash).
 - **Back to top**: a button appears after scrolling down and smoothly scrolls back up, then moves keyboard focus to the page heading.
@@ -54,4 +53,4 @@ then go to http://localhost:8000. You can also open `index.html` directly, but p
 
 **Live site:** https://kingvictor501.github.io/aim-w4d3-recipe/
 
-A link to a recipe that doesn't exist (for example `recipe.html?id=nope`) shows a "Recipe not found" message on the recipe page itself.
+`recipe.html` shows whichever recipe is named in its address (`recipe.html?id=key-lime-pie`). Opened on its own with no recipe named, it takes you to the recipes list to pick one. A link to a recipe that doesn't exist (for example `recipe.html?id=nope`) shows a "Recipe not found" message.

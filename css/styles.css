@@ -1,0 +1,1409 @@
+/* ==========================================================================
+   Sweet Amber — styles for every page
+   Dark theme by default (coal background, light text, amber accents).
+   A light theme swaps the color tokens when <html data-theme="light">.
+   Mobile first: base rules are for phones; @media blocks add wider layouts.
+   ========================================================================== */
+
+:root {
+  /* Dark theme (default) */
+  --bg: #0f0d0e;            /* coal page background */
+  --surface: #1a1718;       /* cards, header, panels */
+  --surface-2: #262122;     /* inputs, hover states, chips */
+  --line: #3a3433;          /* borders */
+  --text: #f9f4da;          /* main text */
+  --muted: #b5ae98;         /* secondary text */
+  --accent: #fcba28;        /* amber text: links, active nav, labels */
+  --accent-hover: #ffcd5c;
+  --amber: #fcba28;         /* amber fill: buttons, active filter */
+  --amber-hover: #ffcd5c;
+  --on-amber: #0f0d0e;      /* text on amber fills */
+  --error: #f38ba3;
+  --success: #3fcf8e;
+  --placeholder: #9a9480;
+  --shadow: 0 0.75rem 2rem rgb(0 0 0 / 0.45);
+
+  /* Spacing scale */
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 5rem;
+
+  --radius: 0.875rem;
+  --content-width: 72rem;
+  --gutter: var(--space-md);
+
+  color-scheme: dark;
+}
+
+/* Light theme: cream background, dark text, darker amber for readable text */
+:root[data-theme="light"] {
+  --bg: #fffaf0;
+  --surface: #ffffff;
+  --surface-2: #f5ecda;
+  --line: #e0d3b8;
+  --text: #1f1a17;
+  --muted: #5c5347;
+  --accent: #8a5300;
+  --accent-hover: #6b4000;
+  --on-amber: #1f1a17;
+  --error: #b4234a;
+  --success: #1b7a45;
+  --placeholder: #6e6454;
+  --shadow: 0 0.75rem 2rem rgb(60 40 10 / 0.12);
+
+  color-scheme: light;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  scroll-padding-top: 5.5rem; /* jumps land below the sticky header */
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  line-height: 1.65;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Hidden on screen, still read by screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  top: var(--space-xs);
+  left: var(--space-xs);
+  z-index: 200;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: 0.5rem;
+  background-color: var(--amber);
+  color: var(--on-amber);
+  font-weight: 700;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+main {
+  width: min(100% - 2 * var(--gutter), var(--content-width));
+  margin-inline: auto;
+  padding-block: var(--space-lg) var(--space-3xl);
+}
+
+/* ==========================================================================
+   Header: brand, main nav (Menu button + links), theme button
+   Phones and tablets (under 1024px): brand, Menu and theme buttons on the
+   first row; the links drop down below when Menu is pressed. main.js sets
+   data-menu on the header; without JavaScript there is no data-menu, so
+   the links simply always show.
+   The Menu button sits right before the links in the HTML, so after
+   opening the menu, Tab moves straight into the links.
+   ========================================================================== */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  /* Full-width bar, content lined up with <main> */
+  padding: var(--space-sm) max(var(--gutter), calc((100% - var(--content-width)) / 2));
+  border-bottom: 1px solid var(--line);
+  background-color: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(8px);
+  view-transition-name: site-header; /* stays put during page transitions */
+}
+
+.brand {
+  margin-right: auto;
+  color: var(--text);
+  font-size: 1.2rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.brand::before {
+  content: "✦ ";
+  content: "✦ " / "";
+  color: var(--accent);
+}
+
+.brand:hover {
+  color: var(--accent);
+}
+
+/* Round icon buttons: theme toggle and menu */
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  min-width: 2.75rem;
+  min-height: 2.75rem; /* 44px tap target */
+  padding: 0 var(--space-md);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background-color: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.icon-button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.theme-toggle {
+  padding: 0;
+}
+
+/* Sun shows in dark mode (switch to light); moon shows in light mode */
+.theme-toggle .icon-moon,
+:root[data-theme="light"] .theme-toggle .icon-sun {
+  display: none;
+}
+
+:root[data-theme="light"] .theme-toggle .icon-moon {
+  display: block;
+}
+
+/* Hamburger lines turn into an X when open */
+.nav-toggle line {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.nav-toggle[aria-expanded="true"] line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] line:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle[aria-expanded="true"] line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* The nav's own box is dropped (its landmark stays), so the Menu button and
+   the list line up as items of the header row */
+.site-nav {
+  display: contents;
+}
+
+/* Links: a full-width row under the brand on phones and tablets */
+.nav-links {
+  order: 3;
+  flex-basis: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: var(--space-xs) 0;
+  list-style: none;
+}
+
+.site-header[data-menu="closed"] .nav-links {
+  display: none;
+}
+
+.nav-links a {
+  display: block;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 0.5rem;
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nav-links a:hover {
+  background-color: var(--surface-2);
+  color: var(--accent);
+}
+
+/* Current page (aria-current="page") and the section a page belongs to
+   (aria-current="true", used on recipe detail pages) */
+.nav-links a[aria-current] {
+  background-color: color-mix(in srgb, var(--amber) 16%, transparent);
+  color: var(--accent);
+  box-shadow: inset 3px 0 0 var(--amber);
+}
+
+/* ==========================================================================
+   Breadcrumb: Home › Recipes › Key Lime Pie
+   ========================================================================== */
+.breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+  margin: 0 0 var(--space-lg);
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+/* The › separator is drawn by CSS and hidden from screen readers */
+.breadcrumb li + li::before {
+  content: "›";
+  content: "›" / "";
+  margin-right: var(--space-xs);
+  color: var(--muted);
+}
+
+.breadcrumb [aria-current="page"] {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+.button,
+.form-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: var(--space-sm) var(--space-lg);
+  border: 2px solid var(--amber);
+  border-radius: 999px;
+  background-color: var(--amber);
+  color: var(--on-amber);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.button:hover,
+.form-actions button:hover {
+  border-color: var(--amber-hover);
+  background-color: var(--amber-hover);
+  color: var(--on-amber);
+}
+
+.button:active,
+.form-actions button:active {
+  transform: translateY(1px);
+}
+
+.button--ghost,
+.form-actions button[type="reset"] {
+  background-color: transparent;
+  color: var(--accent);
+}
+
+.button--ghost:hover,
+.form-actions button[type="reset"]:hover {
+  background-color: color-mix(in srgb, var(--amber) 12%, transparent);
+  color: var(--accent-hover);
+}
+
+.form-actions button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+/* ==========================================================================
+   Homepage
+   ========================================================================== */
+.hero {
+  padding-block: var(--space-xl) var(--space-2xl);
+}
+
+.eyebrow {
+  margin: 0 0 var(--space-sm);
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  max-width: 16ch;
+  margin: 0 0 var(--space-md);
+  font-size: clamp(2.5rem, 1.4rem + 5vw, 4.75rem);
+}
+
+/* Typing line. main.js types the hook into an <output> laid over the
+   original sentence, which turns transparent but keeps its space, so
+   nothing below jumps. Screen readers read the original once. */
+.typing {
+  position: relative;
+  max-width: 38ch;
+  margin: 0 0 var(--space-lg);
+  font-size: clamp(1.25rem, 1rem + 1.25vw, 1.875rem);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.typing.is-typing {
+  color: transparent;
+}
+
+.typing output {
+  position: absolute;
+  inset: 0;
+  color: var(--text);
+}
+
+.typing output::after {
+  content: "";
+  display: inline-block;
+  width: 0.08em;
+  height: 1.1em;
+  margin-left: 0.06em;
+  vertical-align: -0.15em;
+  background-color: var(--amber);
+  animation: caret-blink 1s steps(1) infinite;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.hero-intro {
+  max-width: 60ch;
+  margin: 0 0 var(--space-xl);
+  color: var(--muted);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin: 0;
+}
+
+.section-heading {
+  margin: 0 0 var(--space-md);
+  font-size: clamp(1.5rem, 1.2rem + 1.25vw, 2.125rem);
+}
+
+.home-section {
+  margin-bottom: var(--space-2xl);
+}
+
+/* Category shortcuts on the homepage */
+.category-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.category-links a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  height: 100%;
+  padding: var(--space-md);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.category-links a:hover {
+  border-color: var(--amber);
+  color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.category-links small {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.category-icon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+/* ==========================================================================
+   Page headings
+   ========================================================================== */
+.page-intro {
+  margin-bottom: var(--space-xl);
+}
+
+.page-intro h1 {
+  margin: 0 0 var(--space-sm);
+  font-size: clamp(2.25rem, 1.5rem + 3vw, 3.5rem);
+}
+
+.page-intro p {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--muted);
+}
+
+/* ==========================================================================
+   Recipe cards (recipes page and homepage favourites)
+   ========================================================================== */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin: 0 0 var(--space-md);
+}
+
+.filters button {
+  min-height: 2.75rem;
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background-color: transparent;
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filters button:hover {
+  border-color: var(--amber);
+  color: var(--accent);
+}
+
+.filters button[aria-pressed="true"] {
+  border-color: var(--amber);
+  background-color: var(--amber);
+  color: var(--on-amber);
+}
+
+.result-count {
+  margin: 0 0 var(--space-lg);
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.recipe-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-lg);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recipe-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--space-lg);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--amber);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  box-shadow: var(--shadow);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.recipe-card:hover {
+  border-color: var(--amber);
+  transform: translateY(-3px);
+}
+
+.recipe-card .card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin: 0 0 var(--space-sm);
+}
+
+.card-emoji {
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+.category-tag {
+  padding: 0.125rem var(--space-sm);
+  border-radius: 999px;
+  background-color: var(--surface-2);
+  color: var(--accent);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.recipe-card h2,
+.recipe-card h3 {
+  margin: 0 0 var(--space-xs);
+  font-size: 1.3rem;
+}
+
+.recipe-card .description {
+  margin: 0 0 var(--space-md);
+  color: var(--muted);
+}
+
+.recipe-card .prep {
+  margin: 0 0 var(--space-lg);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.recipe-card .prep::before {
+  content: "⏱ ";
+  content: "⏱ " / "";
+}
+
+.recipe-card .card-link {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+.empty-message {
+  padding: var(--space-xl);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ==========================================================================
+   Recipe detail page
+   ========================================================================== */
+.recipe-header {
+  margin-bottom: var(--space-xl);
+}
+
+.recipe-header .card-emoji {
+  display: block;
+  margin-bottom: var(--space-sm);
+  font-size: 3.5rem;
+}
+
+.recipe-header h1 {
+  margin: 0 0 var(--space-sm);
+  font-size: clamp(2.25rem, 1.5rem + 3vw, 3.5rem);
+}
+
+.recipe-header .description {
+  max-width: 60ch;
+  margin: 0 0 var(--space-lg);
+  color: var(--muted);
+}
+
+/* Prep / cook / chill / serves facts: a list of small labelled boxes */
+.recipe-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recipe-facts li {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--line);
+  border-radius: 0.625rem;
+  background-color: var(--surface);
+}
+
+.recipe-facts small {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.recipe-facts strong {
+  font-size: 1.0625rem;
+}
+
+/* Phones: a lone last box (odd count) stretches across both columns */
+@media (max-width: 639px) {
+  .recipe-facts li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Header, ingredients, method and links; ingredients and method sit side by
+   side on desktop */
+.recipe-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-xl);
+}
+
+.recipe-header {
+  margin-bottom: 0;
+}
+
+.recipe-header .category-tag {
+  display: inline-block;
+}
+
+.recipe-header p {
+  margin: 0 0 var(--space-sm);
+}
+
+.recipe-actions {
+  margin: 0;
+}
+
+.recipe-panel {
+  padding: var(--space-lg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+}
+
+.recipe-panel h2 {
+  margin: 0 0 var(--space-md);
+  color: var(--accent);
+  font-size: 1.375rem;
+}
+
+.ingredients {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ingredients li {
+  padding: var(--space-xs) 0;
+  border-bottom: 1px dashed var(--line);
+}
+
+.ingredients li::before {
+  content: "• ";
+  content: "• " / "";
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.steps li {
+  position: relative;
+  margin-bottom: var(--space-md);
+  padding-left: 2.75rem;
+  counter-increment: step;
+}
+
+/* Numbered amber circles; the <ol> still announces the numbers */
+.steps li::before {
+  content: counter(step);
+  content: counter(step) / "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: var(--amber);
+  color: var(--on-amber);
+  font-weight: 800;
+}
+
+/* ==========================================================================
+   Share form
+   ========================================================================== */
+/* Share page layout: one column on phones; on desktop the form and its
+   confirmation on the left, the handler flow panel on the right */
+.share-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+.share-page > .breadcrumb ol,
+.share-page > .page-intro {
+  margin-bottom: 0;
+}
+
+.share-form {
+  padding: var(--space-lg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+}
+
+.share-form fieldset {
+  margin: 0 0 var(--space-lg);
+  padding: 0;
+  border: 0;
+}
+
+.share-form legend {
+  margin-bottom: var(--space-md);
+  color: var(--accent);
+  font-size: 1.125rem;
+  font-weight: 800;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin: 0 0 var(--space-sm);
+}
+
+.field label {
+  font-weight: 700;
+}
+
+abbr[title="required"] {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border: 1.5px solid var(--line);
+  border-radius: 0.5rem;
+  background-color: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  transition: border-color 0.15s ease;
+}
+
+.field textarea {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--placeholder);
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--amber);
+  outline: 3px solid color-mix(in srgb, var(--amber) 35%, transparent);
+  outline-offset: 1px;
+}
+
+.field.is-valid input,
+.field.is-valid select,
+.field.is-valid textarea {
+  border-color: var(--success);
+}
+
+.field.is-invalid input,
+.field.is-invalid select,
+.field.is-invalid textarea {
+  border-color: var(--error);
+}
+
+.hint,
+.error {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.hint {
+  color: var(--muted);
+}
+
+.error {
+  min-height: 1.4em; /* one line kept even when empty, so a message appearing
+                        doesn't push the Submit button away mid-click */
+  color: var(--error);
+  font-weight: 600;
+}
+
+/* ✕ before each error, so color isn't the only signal */
+.error:not(:empty)::before {
+  content: "✕ ";
+  content: "✕ " / "";
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin: 0;
+}
+
+.form-status {
+  margin: var(--space-md) 0 0;
+  font-weight: 600;
+}
+
+.form-status:empty {
+  display: none;
+}
+
+.form-status.is-error {
+  color: var(--error);
+}
+
+.form-status.is-success {
+  color: var(--success);
+}
+
+/* Confirmation card after a valid submission */
+.confirmation {
+  padding: var(--space-lg);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--success);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  animation: rise 0.3s ease-out;
+}
+
+.confirmation h2 {
+  margin: 0 0 var(--space-xs);
+  font-size: 1.375rem;
+}
+
+.confirmation h2::before {
+  content: "✓ ";
+  content: "✓ " / "";
+  color: var(--success);
+}
+
+.confirmation > p {
+  margin: 0 0 var(--space-md);
+  color: var(--muted);
+}
+
+.confirmation dl {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: var(--space-xs) var(--space-lg);
+  margin: 0;
+}
+
+.confirmation dt {
+  color: var(--accent);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.confirmation dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================================================
+   Handler flow panel (share form)
+   ========================================================================== */
+.flow {
+  padding: var(--space-lg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+}
+
+.flow summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.flow summary::-webkit-details-marker {
+  display: none;
+}
+
+.flow summary h2 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.flow summary::after {
+  content: "Show ▾";
+  flex-shrink: 0;
+  padding: 0.25rem var(--space-sm);
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.flow[open] summary::after {
+  content: "Hide ▴";
+}
+
+.flow > p {
+  margin: var(--space-sm) 0 var(--space-md);
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.flow ol {
+  display: grid;
+  gap: var(--space-xs);
+  max-height: 32rem;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "code   time"
+    "detail detail";
+  gap: 0.125rem var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  border-left: 3px solid var(--line);
+  border-radius: 0.5rem;
+  background-color: var(--surface-2);
+  animation: rise 0.25s ease-out;
+}
+
+.step code {
+  grid-area: code;
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.875rem;
+  overflow-wrap: break-word;
+}
+
+.step.is-pass code,
+.step.is-fail code {
+  padding-left: 2ch;
+  text-indent: -2ch;
+}
+
+.step time {
+  grid-area: time;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.step small {
+  grid-area: detail;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.step.is-idle {
+  animation: none;
+}
+
+.step.is-info {
+  border-left-color: var(--amber);
+}
+
+.step.is-info code {
+  color: var(--accent);
+}
+
+.step.is-pass {
+  border-left-color: var(--success);
+}
+
+.step.is-pass code::before {
+  content: "✓ ";
+  content: "✓ " / "";
+  color: var(--success);
+}
+
+.step.is-fail {
+  border-left-color: var(--error);
+}
+
+.step.is-fail code::before {
+  content: "✕ ";
+  content: "✕ " / "";
+  color: var(--error);
+}
+
+.step.is-fail small {
+  color: var(--error);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* ==========================================================================
+   404 page
+   ========================================================================== */
+.not-found {
+  padding-block: var(--space-2xl);
+  text-align: center;
+}
+
+.not-found .big-emoji {
+  margin: 0;
+  font-size: 4.5rem;
+  line-height: 1;
+}
+
+.not-found h1 {
+  margin: var(--space-md) 0 var(--space-sm);
+  font-size: clamp(2.25rem, 1.5rem + 3vw, 3.5rem);
+}
+
+.not-found p {
+  max-width: 50ch;
+  margin: 0 auto var(--space-lg);
+  color: var(--muted);
+}
+
+.not-found .hero-actions {
+  justify-content: center;
+}
+
+.not-found code {
+  overflow-wrap: anywhere;
+  color: var(--text);
+}
+
+/* ==========================================================================
+   Footer (links are copied from the main nav by main.js)
+   ========================================================================== */
+.site-footer {
+  display: grid;
+  gap: var(--space-md);
+  padding: var(--space-xl) max(var(--gutter), calc((100% - var(--content-width)) / 2));
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-lg);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer-links:empty {
+  display: none;
+}
+
+.footer-links a {
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.footer-links a:hover,
+.footer-links a[aria-current] {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+/* ==========================================================================
+   Back-to-top button
+   ========================================================================== */
+.to-top {
+  position: fixed;
+  right: var(--space-md);
+  bottom: var(--space-md);
+  z-index: 90;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border: 2px solid var(--amber);
+  border-radius: 50%;
+  background-color: var(--amber);
+  color: var(--on-amber);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  /* Hidden until you scroll down. visibility (not just opacity) keeps the
+     invisible button out of the Tab order and away from screen readers */
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(1rem);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+}
+
+.to-top.is-visible {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+}
+
+.to-top:hover {
+  background-color: var(--amber-hover);
+}
+
+.to-top svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ==========================================================================
+   Page transitions
+   Browsers with cross-page View Transitions cross-fade between pages while
+   the header stays in place; others get a short fade-in on load.
+   ========================================================================== */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+}
+
+@supports not (view-transition-name: none) {
+  main {
+    animation: page-in 0.35s ease-out;
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* ==========================================================================
+   Tablet (640px and up)
+   ========================================================================== */
+@media (min-width: 640px) {
+  :root {
+    --gutter: var(--space-xl);
+  }
+
+  .recipe-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .category-links {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  /* As many boxes per row as fit, sharing the row evenly (no lone box) */
+  .recipe-facts {
+    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  }
+
+  .share-form {
+    padding: var(--space-xl);
+  }
+}
+
+/* ==========================================================================
+   Desktop (1024px and up): menu button hidden, links in a row
+   ========================================================================== */
+@media (min-width: 1024px) {
+  .nav-toggle {
+    display: none;
+  }
+
+  .nav-links,
+  .site-header[data-menu="closed"] .nav-links {
+    order: 0;
+    flex-basis: auto;
+    display: flex;
+    flex-direction: row;
+    padding: 0;
+  }
+
+  .nav-links a {
+    padding: var(--space-xs) var(--space-md);
+    border-radius: 999px;
+  }
+
+  .nav-links a[aria-current] {
+    box-shadow: inset 0 -2px 0 var(--amber);
+  }
+
+  .recipe-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .recipe-detail {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    align-items: start;
+  }
+
+  .recipe-header,
+  .recipe-actions {
+    grid-column: 1 / -1;
+  }
+
+  .share-page {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    grid-template-areas:
+      "crumb   crumb"
+      "intro   intro"
+      "form    flow"
+      "confirm flow";
+  }
+
+  .share-page > .breadcrumb {
+    grid-area: crumb;
+  }
+
+  .share-page > .page-intro {
+    grid-area: intro;
+  }
+
+  .share-form {
+    grid-area: form;
+  }
+
+  .confirmation {
+    grid-area: confirm;
+  }
+
+  .share-page > .flow {
+    grid-area: flow;
+  }
+
+  .flow {
+    position: sticky;
+    top: 5.5rem;
+  }
+
+  .hero {
+    padding-block: var(--space-3xl);
+  }
+}
+
+/* ==========================================================================
+   Accessibility preferences
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* Windows High Contrast: keep current page, active filter and focus visible */
+@media (forced-colors: active) {
+  .nav-links a[aria-current],
+  .filters button[aria-pressed="true"],
+  .theme-toggle[aria-pressed="true"] {
+    outline: 2px solid Highlight;
+  }
+
+  .steps li::before {
+    border: 1px solid CanvasText;
+  }
+}

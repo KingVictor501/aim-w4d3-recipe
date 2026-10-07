@@ -1126,7 +1126,7 @@ abbr[title="required"] {
 }
 
 /* ==========================================================================
-   404 page
+   "Recipe not found" message (recipe.html with an unknown id)
    ========================================================================== */
 .not-found {
   padding-block: var(--space-2xl);

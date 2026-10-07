@@ -10,7 +10,7 @@
 //  3. Helpers                       9. Recipes page: category filter
 //  4. Nav menu (hamburger)         10. Recipe detail page
 //  5. Theme toggle button          11. Share form: validation + handler flow
-//  6. Footer links, back to top    12. 404 page
+//  6. Footer links, back to top
 // ==========================================================================
 
 // ==========================================================================
@@ -1104,14 +1104,6 @@ const initShareForm = () => {
 };
 
 // ==========================================================================
-// 12. 404 page: show the address that wasn't found
-// ==========================================================================
-const initNotFound = () => {
-  if (!pageHas("missing-path")) return;
-  document.getElementById("missing-path").textContent = `${window.location.pathname}${window.location.search}`;
-};
-
-// ==========================================================================
 // Start everything once the page's HTML has been read
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
@@ -1125,5 +1117,4 @@ document.addEventListener("DOMContentLoaded", () => {
   initRecipes();
   initRecipeDetail();
   initShareForm();
-  initNotFound();
 });

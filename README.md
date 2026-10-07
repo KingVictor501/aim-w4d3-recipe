@@ -10,7 +10,6 @@ A dessert recipe site built with plain HTML, CSS and JavaScript (ES6, no framewo
 | Recipes | `recipes.html` | Grid of 12 recipe cards with a filter by category |
 | Recipe | `recipe.html?id=…` | One recipe: times, servings, ingredients and method (opened from "View Recipe") |
 | Share a Recipe | `share.html` | Form with live validation, cross-field checks and a handler flow panel |
-| Not found | `404.html` | Custom page for wrong links |
 
 ## Structure
 
@@ -20,7 +19,6 @@ A dessert recipe site built with plain HTML, CSS and JavaScript (ES6, no framewo
 ├── recipes.html
 ├── recipe.html
 ├── share.html
-├── 404.html
 ├── css/
 │   └── styles.css   # All styles: dark theme (default) and light theme
 └── js/
@@ -56,4 +54,4 @@ then go to http://localhost:8000. You can also open `index.html` directly, but p
 
 **Live site:** https://kingvictor501.github.io/aim-w4d3-recipe/
 
-**About the 404 page:** GitHub Pages shows `404.html` for any wrong address on the live site, even one several folders deep. Because of that, `404.html` has `<base href="/aim-w4d3-recipe/">` so its styles and links always load from the site's home folder (change it if the repository is renamed). To preview it locally, run the server from the folder *above* this one and open http://localhost:8000/aim-w4d3-recipe/404.html. A link to a recipe that doesn't exist (for example `recipe.html?id=nope`) shows a "Recipe not found" message on the recipe page itself.
+A link to a recipe that doesn't exist (for example `recipe.html?id=nope`) shows a "Recipe not found" message on the recipe page itself.

@@ -54,4 +54,6 @@ python3 -m http.server 8000
 
 then go to http://localhost:8000. You can also open `index.html` directly, but page transitions need a server.
 
-**About the 404 page:** wrong links to recipes (for example `recipe.html?id=nope`) always go to `404.html`. For other wrong addresses, the custom 404 page is shown by hosts that support it, such as GitHub Pages. Python's local server shows its own plain error page instead.
+**Live site:** https://kingvictor501.github.io/aim-w4d3-recipe/
+
+**About the 404 page:** GitHub Pages shows `404.html` for any wrong address on the live site, even one several folders deep. Because of that, `404.html` has `<base href="/aim-w4d3-recipe/">` so its styles and links always load from the site's home folder (change it if the repository is renamed). To preview it locally, run the server from the folder *above* this one and open http://localhost:8000/aim-w4d3-recipe/404.html. A link to a recipe that doesn't exist (for example `recipe.html?id=nope`) shows a "Recipe not found" message on the recipe page itself.

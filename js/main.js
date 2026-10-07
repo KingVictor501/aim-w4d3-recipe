@@ -754,11 +754,17 @@ const initRecipes = () => {
 const initRecipeDetail = () => {
   if (!pageHas("recipe-detail")) return;
 
-  // Find the recipe named in the address; unknown ids go to the 404 page
+  // Find the recipe named in the address
   const id = new URLSearchParams(window.location.search).get("id") || "";
   const matches = recipesWithId(id);
+
+  // Unknown id: show the "Recipe not found" message instead, and say so in
+  // the page title and breadcrumb
   if (matches.length === 0) {
-    window.location.replace("404.html");
+    document.title = "Recipe not found | Sweet Amber";
+    document.getElementById("crumb-current").textContent = "Recipe not found";
+    document.getElementById("missing-id").textContent = id === "" ? "that" : `"${id}"`;
+    document.getElementById("recipe-missing").hidden = false;
     return;
   }
   const [recipe] = matches;

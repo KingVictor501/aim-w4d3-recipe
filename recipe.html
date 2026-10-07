@@ -78,6 +78,16 @@
         <a class="button" id="recipe-more" href="recipes.html">More recipes</a>
       </p>
     </article>
+    <!-- Shown instead when the ?id= in the address doesn't match a recipe -->
+    <section class="not-found" id="recipe-missing" aria-labelledby="missing-title" hidden>
+      <p class="big-emoji" aria-hidden="true">🧁</p>
+      <h1 id="missing-title">Recipe not found</h1>
+      <p>We couldn't find a recipe called <code id="missing-id">that</code>. The link may be wrong, or the recipe may have moved.</p>
+      <p class="hero-actions">
+        <a class="button" href="recipes.html">Browse recipes</a>
+        <a class="button button--ghost" href="index.html">Go to the homepage</a>
+      </p>
+    </section>
     <noscript><p class="empty-message">Turn on JavaScript to see this recipe, or <a href="recipes.html">browse all recipes</a>.</p></noscript>
   </main>
 
